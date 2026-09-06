@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAZIM NAHIAN | Main Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Hind+Siliguri:wght@300;500;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --nasa-blue: #0b3d91;
+            --cyber-cyan: #00e5ff;
+            --bg-dark: #030712;
+            --panel-bg: rgba(11, 22, 44, 0.85);
+            --border-color: rgba(0, 229, 255, 0.2);
+            --text-muted: #8fa0dd;
+        }
+
+        body {
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            background-color: var(--bg-dark); color: #f0f4f8; font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            overflow-x: hidden; scroll-behavior: smooth;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+        .hud-top {
+            position: fixed; top: 0; width: 100%; padding: 15px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color); backdrop-filter: blur(25px); z-index: 1000;
+            background: linear-gradient(90deg, rgba(11, 61, 145, 0.25), rgba(3, 7, 18, 0.9));
+        }
+        
+        .hud-left { display: flex; align-items: center; gap: 20px; }
+        .system-status {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 500; color: var(--cyber-cyan);
+            letter-spacing: 1px; display: flex; align-items: center; gap: 8px;
+        }
+        .status-indicator {
+            width: 8px; height: 8px; background-color: #00ff66;
+            border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #00ff66;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+        }
+        
+        .hud-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.15); }
+        .node-info { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); }
+
+        .right-cluster { display: flex; align-items: center; gap: 20px; }
+        
+        .lang-toggle-btn {
+            background: rgba(0, 229, 255, 0.1); border: 1px solid var(--cyber-cyan);
+            color: var(--cyber-cyan); padding: 6px 14px; border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; transition: 0.3s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .lang-toggle-btn:hover { background: var(--cyber-cyan); color: var(--bg-dark); box-shadow: 0 0 15px rgba(0,229,255,0.4); }
+
+        .identity-badge { text-align: right; font-family: 'JetBrains Mono', monospace; line-height: 1.3; }
+        .id-title { font-size: 0.75rem; color: #fff; font-weight: 600; }
+        .id-status { font-size: 0.6rem; color: var(--cyber-cyan); font-weight: bold; }
+        .nasa-real-logo { width: 45px; height: auto; display: block; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 130px 20px 60px 20px; }
+
+        .page-header { text-align: center; margin-bottom: 50px; animation: fadeInDown 0.8s ease; }
+        .page-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: #fff; margin-bottom: 15px;
+        }
+        .page-header h1 span { color: var(--cyber-cyan); text-shadow: 0 0 20px rgba(0,229,255,0.4); }
+        .page-header p {
+            color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; max-width: 700px; margin: 0 auto; line-height: 1.6;
+        }
+
+        /* Mentors Stacked List (Por por / One after another) */
+        .mentors-stack {
+            display: flex; flex-direction: column; gap: 35px; margin-bottom: 50px;
+        }
+
+        .mentor-card {
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; overflow: hidden; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: row;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @media (max-width: 768px) {
+            .mentor-card { flex-direction: column; }
+        }
+
+        .mentor-card:hover {
+            transform: translateY(-5px); border-color: var(--cyber-cyan);
+            box-shadow: 0 20px 40px rgba(0,229,255,0.2);
+        }
+
+        .mentor-img-wrap {
+            width: 320px; min-width: 320px; height: 280px; overflow: hidden; position: relative;
+            background: #080f1d; border-right: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .mentor-img-wrap { width: 100%; min-width: 100%; height: 250px; border-right: none; border-bottom: 1px solid var(--border-color); }
+        }
+
+        .mentor-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover; object-position: center top;
+            transition: transform 0.6s ease;
+        }
+
+        .mentor-card:hover .mentor-img-wrap img { transform: scale(1.07); }
+
+        .mentor-badge-tag {
+            position: absolute; bottom: 12px; right: 12px;
+            background: rgba(2, 6, 14, 0.85); border: 1px solid rgba(0,229,255,0.4);
+            padding: 5px 12px; border-radius: 20px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--cyber-cyan); backdrop-filter: blur(5px);
+        }
+
+        .mentor-content { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; justify-content: center; }
+
+        .mentor-name {
+            font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 6px;
+        }
+
+        .mentor-title {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--cyber-cyan); margin-bottom: 18px; line-height: 1.4;
+        }
+
+        .mentor-message {
+            background: rgba(0, 229, 255, 0.03); border-left: 2px solid var(--cyber-cyan);
+            padding: 12px 15px; border-radius: 4px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.6;
+            font-style: italic;
+        }
+
+        .mentor-message strong { color: var(--cyber-cyan); font-style: normal; display: block; margin-bottom: 4px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; }
+
+        /* Navigation Button to Page 2 */
+        .page-navigation { text-align: center; margin-top: 50px; }
+        .btn-next-page {
+            background: linear-gradient(135deg, rgba(11, 61, 145, 0.6), rgba(0, 229, 255, 0.2));
+            border: 1px solid var(--cyber-cyan); color: #fff; padding: 14px 32px; border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 12px; transition: 0.3s ease;
+            box-shadow: 0 0 20px rgba(0,229,255,0.15);
+        }
+        .btn-next-page:hover {
+            background: rgba(0, 229, 255, 0.2); box-shadow: 0 0 30px rgba(0,229,255,0.4);
+            transform: translateY(-3px);
+        }
+
+        footer { margin-top: 60px; padding-bottom: 30px; text-align: center; font-size: 0.72rem; color: #475569; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hud-top { padding: 12px 20px; }
+            .hud-left { display: none; }
+            .right-cluster { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud-top">
+        <div class="hud-left">
+            <div class="system-status"><span class="status-indicator"></span> SYSTEM ONLINE // SECURE NODE</div>
+            <div class="hud-divider"></div>
+            <div class="node-info">DASHBOARD MODULE 1.0</div>
+        </div>
+        
+        <div class="right-cluster">
+            <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()">
+                <i class="fas fa-globe"></i> <span id="langBtnText">বাংলা</span>
+            </button>
+
+            <div class="identity-badge">
+                <div class="id-title">KAZIM NAHIAN</div>
+                <div class="id-status">AC.T LEVEL-276</div>
+            </div>
+            <img class="nasa-real-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg" alt="NASA Logo">
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1 id="headerTitle">MENTORS & <span>INSPIRATIONS</span></h1>
+            <p id="headerSub">যাঁদের দূরদর্শী নেতৃত্ব, গবেষণা এবং অনুপ্রেরণা আমার এই পথচলাকে সবসময় শাণিত করেছে, তাঁদের প্রতি শ্রদ্ধাঞ্জলি ও বিশেষ বার্তা।</p>
+        </div>
+
+        <div class="mentors-stack">
+            
+            <!-- 1st Mentor: MD. Nazmul Alom -->
+            <div class="mentor-card">
+                <div class="mentor-img-wrap">
+                    <img src="https://lh3.googleusercontent.com/d/1IsdnnNVv5MQT9jRBSeDg1cbwp7KOwbHG" alt="MD. Nazmul Alom">
+                    <div class="mentor-badge-tag" data-en="ROOT MENTOR" data-bn="রুট মেন্টর">ROOT MENTOR</div>
+                </div>
+                <div class="mentor-content">
+                    <h3 class="mentor-name">MD. Nazmul Alom</h3>
+                    <div class="mentor-title" data-en="Headmaster (In-charge), Jhikargacha Bodoruddin Muslim High School, Jhikargacha, Jashore,Bangladesh" data-bn="প্রধান শিক্ষক (In-charge), ঝিকরগাছা বদরুদ্দীন মুসলিম হাইস্কুল, ঝিকরগাছা, যশোর,বাংলাদেশ">
+                        Headmaster (Acting), Jhikargacha Bodoruddin Muslim High School, Jhikargacha, Jashore
+                    </div>
+                    <div class="mentor-message">
+                        <strong data-en="Message:" data-bn="বার্তা:">Message:</strong>
+                        <span data-en="&quot;My academic foundation and scientific curiosity were heavily shaped by your visionary leadership. Your guidance remains a constant source of inspiration in my technological journey.&quot;" data-bn="&quot;আমার প্রাতিষ্ঠানিক শিক্ষা ও বিজ্ঞানচর্চার শেকড় মজবুত করার পেছনে আপনার অসামান্য অবদান রয়েছে। ঝিকরগাছার মাটি থেকে বিশ্বমঞ্চে প্রযুক্তির আলো ছড়ানোর যে স্বপ্ন আমি দেখছি, তার নেপথ্যে আপনার সুশিক্ষা ও আদর্শ সবসময় আমার পাথেয় হয়ে থাকবে।&quot;">
+                            "My academic foundation and scientific curiosity were heavily shaped by your visionary leadership. Your guidance remains a constant source of inspiration in my technological journey."
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2nd Mentor: Prof. David J. Malan (Updated with a cleaner portrait link) -->
+            <div class="mentor-card">
+                <div class="mentor-img-wrap">
+                    <img src="https://alchetron.com/cdn/david-malan-computer-scientist-d662f4d9-9e16-4c55-9e93-d5c115b0bd8-resize-750.jpg" alt="Prof. David J. Malan">
+                    <div class="mentor-badge-tag" data-en="ACADEMIC ICON" data-bn="একাডেমিক আইকন">ACADEMIC ICON</div>
+                </div>
+                <div class="mentor-content">
+                    <h3 class="mentor-name">Prof. David J. Malan</h3>
+                    <div class="mentor-title" data-en="Harvard University (CS50 Educator & Computer Science Luminary)" data-bn="হার্ভার্ড বিশ্ববিদ্যালয় (CS50 শিক্ষক ও কম্পিউটার সায়েন্স লুমিনারি)">
+                        Harvard University (CS50 Educator & Computer Science Luminary)
+                    </div>
+                    <div class="mentor-message">
+                        <strong data-en="Message:" data-bn="বার্তা:">Message:</strong>
+                        <span data-en="&quot;Your phenomenal approach to computer science education and the philosophy of CS50 transformed my perspective on programming, turning complex algorithms into an artistic adventure.&quot;" data-bn="&quot;আপনার দূরদর্শী কম্পিউটার সায়েন্স শিক্ষা এবং 'CS50' এর স্পিরিট কোডিংয়ের প্রতি আমার দৃষ্টিভঙ্গি সম্পূর্ণ বদলে দিয়েছে। আপনার শিক্ষাদান পদ্ধতি আমাকে জটিল অ্যালগরিদম ও সিস্টেম আর্কিটেকচার নিয়ে আত্মবিশ্বাসী করে তুলেছে।&quot;">
+                            "Your phenomenal approach to computer science education and the philosophy of CS50 transformed my perspective on programming, turning complex algorithms into an artistic adventure."
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3rd Mentor: Chad Rose -->
+            <div class="mentor-card">
+                <div class="mentor-img-wrap">
+                    <img src="https://eng.auburn.edu/images/programs/mech/headshots/rose-chad.jpg" alt="Chad Rose">
+                    <div class="mentor-badge-tag" data-en="ROBOTICS INNOVATOR" data-bn="রোবটিক্স উদ্ভাবক">ROBOTICS INNOVATOR</div>
+                </div>
+                <div class="mentor-content">
+                    <h3 class="mentor-name">Chad Rose</h3>
+                    <div class="mentor-title" data-en="Mechanical Engineering, Auburn Robotics Team (NASA LUNABOTICS Challenge)" data-bn="মেকানিক্যাল ইঞ্জিনিয়ারিং, অবার্ন রোবটিক্স টিম (নাসা লুনাবোটিক্স চ্যালেঞ্জ)">
+                        Mechanical Engineering, Auburn Robotics Team (NASA LUNABOTICS Challenge)
+                    </div>
+                    <div class="mentor-message">
+                        <strong data-en="Message:" data-bn="বার্তা:">Message:</strong>
+                        <span data-en="&quot;Your remarkable engineering feats in the NASA Lunabotics challenge deeply inspired me to dive into advanced robotics, mechanics, and autonomous system design.&quot;" data-bn="&quot;NASA LUNABOTICS চ্যালেঞ্জে আপনাদের রোবটিক্স টিমের অসাধারণ সাফল্য এবং মেকানিক্যাল ইঞ্জিনিয়ারিংয়ের উদ্ভাবন আমাকে রিমোট সিস্টেম ও রোবট ডিজাইন নিয়ে কাজ করতে সবচেয়ে বেশি উৎসাহিত করেছে। আপনার কাজ আমার কাছে বড় এক অনুপ্রেরণা।&quot;">
+                            "Your remarkable engineering feats in the NASA Lunabotics challenge deeply inspired me to dive into advanced robotics, mechanics, and autonomous system design."
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="page-navigation">
+            <a href="https://nasa-robotics-dev.github.io/systems/Insidekn" class="btn-next-page">
+                <span data-en="PROCEED TO PAGE 2 (ADVANCED MODULE)" data-bn="পরবর্তী পেজে যান (পেজ ২)">PROCEED TO PAGE 2 (ADVANCED MODULE)</span> <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <footer>
+            <p>SYSTEM SECURED // KAZIM NAHIAN PORTFOLIO MODULE 1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'bn' : 'en';
+            const btnText = document.getElementById('langBtnText');
+            
+            if (currentLang === 'bn') {
+                btnText.innerText = 'English';
+            } else {
+                btnText.innerText = 'বাংলা';
+            }
+
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.innerHTML = el.getAttribute(`data-${currentLang}`);
+            });
+        }
+    </script>
+</body>
+</html>
